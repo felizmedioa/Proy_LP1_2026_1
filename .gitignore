@@ -1,0 +1,23 @@
+# Objetos compilados
+*.o
+*.obj
+
+# Archivos ejecutables
+*.exe
+*.out
+*.app
+
+# Archivos de depuración y dumps
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Crash logs
+gcc_crash.info
+core
+
+# Archivos temporales de editores de código (VS Code, etc.)
+.vscode/
+*.swp
+*~
