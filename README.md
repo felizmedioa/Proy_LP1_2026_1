@@ -10,15 +10,30 @@ Este proyecto es un evaluador interactivo de expresiones algebraicas escrito en 
 4. **Validación Exhaustiva de Errores**: Previene cierres inesperados gestionando activamente las divisiones por cero, dominios inválidos de números (raíz de negativos), y errores sintácticos.
 5. **Configurable**: Posibilidad de cambiar entre unidades de ángulos en cualquier instante del uso (usar comando `deg` o `rad`).
 
+## Instalación y Configuración del Entorno (Windows)
+
+Para compilar el proyecto utilizando el archivo `Makefile` provisto, el sistema requiere tener instalado **Make**.
+
+1. **Instalar Chocolatey:** Abre PowerShell como Administrador y corre el comando de instalación oficial (revisar [Documentación de Chocolatey](https://chocolatey.org/install#individual)):
+   ```powershell
+   Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+   ```
+2. **Instalar Make:** Una vez instalado Chocolatey, en la misma consola como administrador, ejecuta el siguiente comando (referencia: [StackOverflow](https://stackoverflow.com/questions/32127524/how-can-i-install-and-use-make-in-windows)):
+   ```powershell
+   choco install make
+   ```
+3. Reinicia tu terminal o Visual Studio Code para que reconozca los cambios en las variables de entorno.
+
 ## Uso Básico
-Para compilar en Linux o Windows (con herramientas GNU o MinGW):
+
+Una vez cuentes con `make` (y tu compilador base como `gcc` a través de MinGW), navega por terminal a la carpeta de este proyecto y compila:
 ```bash
 make
 ./eval_math
 ```
 
-Dentro del REPL puedes tipear comandos como:
+Dentro del REPL interactivo puedes tipear comandos y evaluarlos:
 - `asin(sin(pi/2))`
 - `a = max(10, 5)`
-- `list` (para ver las variables guardadas)
-- `quit` (para salir)
+- `list` (para visualizar las variables guardadas)
+- `quit` (o `exit`, para salir del programa)
