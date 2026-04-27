@@ -3,6 +3,20 @@
 ## Descripción del Proyecto
 Este proyecto es un evaluador interactivo de expresiones algebraicas escrito en lenguaje C (sin dependencias externas pesadas, salvo la librería matemática estándar `-lm`). Funciona como un intérprete tipo REPL (Read-Eval-Print Loop) inspirado en calculadoras o herramientas como GeoGebra. Soporta operadores básicos de aritmética, funciones trigonométricas, logarítmicas, variables al vuelo y manejo completo de la procedencia y asociatividad matemática a través de un Árbol de Sintaxis Abstracta (AST) derivado de un Analizador Léxico (Lexer) y Sintáctico (Parser) de descenso recursivo construidos desde cero.
 
+## Lista de Integrantes
+- [Rodrigo Matias Ortiz Montoya]
+- [Piero Mauro Morales Sinche]
+- [Aldair Edgard Gutierrez Mamani]
+- [Jose Luis Canchanya Ramos]
+
+## Características Principales
+*  Operadores: `+`, `-`, `*`, `/`, `^` (potencia).
+*  Funciones: `sin`, `cos`, `tan`, `sqrt`, `log`, `log10`, `abs`, `round`, `ceil`, `floor`, `max`, `min`.
+*  Constantes: `pi`, `e`.
+*  Variables: Definición y uso (ej: `x = 5`).
+*  Unidades: Soporta cambio entre Radianes y Grados (`rad` / `deg`).
+*  Manejo de errores: Detección de errores léxicos, sintácticos y de dominio (ej: `sqrt(-1)`).
+
 ## Beneficios de la aplicación
 1. **Velocidad y Ligereza**: Al estar implementado puramente en C nativo, la sobrecarga es casi nula, permitiendo la evaluación instantánea de operaciones complejas.
 2. **Interfaz Interactiva**: Los comandos amigables y el formato limpio a través de consola lo hacen útil en computadoras con pocos recursos o para uso por SSH.
