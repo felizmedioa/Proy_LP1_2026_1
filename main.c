@@ -24,7 +24,7 @@ int main(void) {
     printf("====================================================\n");
     printf("   Mini Evaluador de Expresiones Algebraicas (P11)  \n");
     printf("====================================================\n");
-    printf("Escribe una expresión (ej. a = 5 * sin(pi/2))\n");
+    printf("Escribe una expresion (ej. a = 5 * sin(pi/2))\n");
     printf("Comandos especiales:\n");
     printf("  list   - Muestra las variables definidas\n");
     printf("  quit   - Sale del programa\n");
