@@ -9,7 +9,7 @@
 
 #define BUFFER_SIZE 1024
 
-// Recorta los espacios y saltos de línea al final de un string
+// Recorta los espacios y saltos de línea al final de un string.
 void trim_newline(char* str) {
     int len = strlen(str);
     while (len > 0 && (str[len-1] == '\n' || str[len-1] == '\r' || str[len-1] == ' ')) {
