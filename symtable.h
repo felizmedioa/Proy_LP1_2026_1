@@ -4,17 +4,22 @@
 // Máxima cantidad de variables
 #define MAX_VARIABLES 100
 
-// Estructura de un símbolo (variable)
+// Estructura de un símbolo (variable o constante)
 typedef struct {
     char name[32];
     double value;
+    int is_const; // 1 si es una constante protegida, 0 si es variable
 } Symbol;
 
-// Inicializa la tabla de símbolos e inserta constantes (e.g., pi, e)
+// Inicializa la tabla de símbolos e inserta constantes (pi, e, phi)
 void symtable_init(void);
 
-// Establece o actualiza el valor de una variable
-void symtable_set(const char* name, double value);
+// Establece o actualiza el valor de una variable.
+// Retorna 1 si fue exitoso, 0 si la variable es una constante protegida.
+int symtable_set(const char* name, double value);
+
+// Inserta un símbolo marcado como constante (solo para uso interno en init).
+void symtable_set_const(const char* name, double value);
 
 // Obtiene el valor de una variable. Retorna 1 si existe, 0 si no.
 int symtable_get(const char* name, double* out_value);

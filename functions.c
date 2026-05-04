@@ -72,12 +72,25 @@ double f_acos(double x) {
 double f_atan(double x) { return remove_angle_factor(atan(x)); }
 double f_atan2(double y, double x) { return remove_angle_factor(atan2(y, x)); }
 
-double f_log(double x) {
+double f_ln(double x) {
     if (x <= 0.0) {
-        printf("Error de Dominio: log(%g) negativo o cero.\n", x);
+        printf("Error de Dominio: ln(%g) debe ser positivo.\n", x);
         return NAN;
     }
     return log(x);
+}
+
+// log(a, b): logaritmo de b en base a  =  ln(b) / ln(a)
+double f_log_base(double a, double b) {
+    if (a <= 0.0 || a == 1.0) {
+        printf("Error de Dominio: log(a, b): la base 'a' debe ser positiva y distinta de 1.\n");
+        return NAN;
+    }
+    if (b <= 0.0) {
+        printf("Error de Dominio: log(a, b): el argumento 'b' debe ser positivo.\n");
+        return NAN;
+    }
+    return log(b) / log(a);
 }
 double f_log2(double x) {
     if (x <= 0.0) {
@@ -104,25 +117,70 @@ double f_sqrt(double x) {
 
 // Tabla de callbacks para funciones
 static FuncEntry func_table[] = {
-    {"sin", 1, f_sin, NULL},
-    {"cos", 1, f_cos, NULL},
-    {"tan", 1, f_tan, NULL},
-    {"asin", 1, f_asin, NULL},
-    {"acos", 1, f_acos, NULL},
-    {"atan", 1, f_atan, NULL},
-    {"atan2", 2, NULL, f_atan2},
-    {"log", 1, f_log, NULL},
-    {"log2", 1, f_log2, NULL},
+    {"sin",   1, f_sin,   NULL},
+    {"cos",   1, f_cos,   NULL},
+    {"tan",   1, f_tan,   NULL},
+    {"asin",  1, f_asin,  NULL},
+    {"acos",  1, f_acos,  NULL},
+    {"atan",  1, f_atan,  NULL},
+    {"atan2", 2, NULL,    f_atan2},
+    {"ln",    1, f_ln,    NULL},
+    {"log",   2, NULL,    f_log_base},
+    {"log2",  1, f_log2,  NULL},
     {"log10", 1, f_log10, NULL},
-    {"exp", 1, exp, NULL},
-    {"sqrt", 1, f_sqrt, NULL},
-    {"abs", 1, fabs, NULL},
-    {"max", 2, NULL, f_max},
-    {"min", 2, NULL, f_min},
-    {"pow", 2, NULL, pow}
+    {"exp",   1, exp,     NULL},
+    {"sqrt",  1, f_sqrt,  NULL},
+    {"abs",   1, fabs,    NULL},
+    {"max",   2, NULL,    f_max},
+    {"min",   2, NULL,    f_min},
+    {"pow",   2, NULL,    pow}
 };
 static int num_functions = sizeof(func_table) / sizeof(func_table[0]);
 
+
+// Descripciones en español para cada función (orden paralelo a func_table[])
+static const char* func_descriptions[] = {
+    "Seno",
+    "Coseno",
+    "Tangente",
+    "Arcoseno              (dominio: [-1, 1])",
+    "Arcocoseno            (dominio: [-1, 1])",
+    "Arcotangente",
+    "Arcotangente de 2 args (atan2(y, x))",
+    "Logaritmo natural     (base e, x > 0)",
+    "Logaritmo en base a de b (a > 0, a != 1, b > 0)",
+    "Logaritmo base 2      (x > 0)",
+    "Logaritmo base 10     (x > 0)",
+    "Exponencial           (e^x)",
+    "Raiz cuadrada         (x >= 0)",
+    "Valor absoluto",
+    "Maximo entre dos valores",
+    "Minimo entre dos valores",
+    "Potencia              (equivale a a^b)"
+};
+
+void list_functions(void) {
+    printf("Funciones matematicas disponibles:\n");
+    printf("  %-26s  %s\n", "Llamada", "Descripcion");
+    printf("  %-26s  %s\n", "--------------------------", "------------------------------------");
+    for (int i = 0; i < num_functions; i++) {
+        char signature[40];
+        if (func_table[i].num_args == 1) {
+            snprintf(signature, sizeof(signature), "%s(x)", func_table[i].name);
+        } else {
+            snprintf(signature, sizeof(signature), "%s(a, b)", func_table[i].name);
+        }
+        printf("  %-26s  -> %s\n", signature, func_descriptions[i]);
+    }
+    printf("\nConstantes disponibles:\n");
+    printf("  %-26s  -> %s\n", "pi",  "3.14159265358979...  (constante)");
+    printf("  %-26s  -> %s\n", "e",   "2.71828182845904...  (constante)");
+    printf("  %-26s  -> %s\n", "phi", "1.61803398874989...  (constante, numero aureo)");
+    printf("\nOperadores disponibles:\n");
+    printf("  +  Suma          -  Resta\n");
+    printf("  *  Multiplicar   /  Dividir\n");
+    printf("  ^  Potencia      %%  Modulo\n");
+}
 
 int call_function(const char* name, const double* args, int num_args, double* out_result) {
     for (int i = 0; i < num_functions; i++) {

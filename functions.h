@@ -12,4 +12,7 @@ int call_function(const char* name, const double* args, int num_args, double* ou
 void set_angle_unit(int use_degrees);
 int get_angle_unit(void);
 
+// Imprime la lista de todas las funciones matemáticas disponibles
+void list_functions(void);
+
 #endif // FUNCTIONS_H

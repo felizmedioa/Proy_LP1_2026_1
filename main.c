@@ -27,6 +27,7 @@ int main(void) {
     printf("Escribe una expresion (ej. a = 5 * sin(pi/2))\n");
     printf("Comandos especiales:\n");
     printf("  list   - Muestra las variables definidas\n");
+    printf("  funct  - Muestra las funciones disponibles\n");
     printf("  quit   - Sale del programa\n");
     printf("  deg    - Cambia el modo a Grados\n");
     printf("  rad    - Cambia el modo a Radianes (por defecto)\n");
@@ -62,6 +63,9 @@ int main(void) {
         } else if (strcmp(input, "rad") == 0) {
             set_angle_unit(0);
             printf("Modo angular cambiado a RADIANES.\n");
+            continue;
+        } else if (strcmp(input, "funct") == 0) {
+            list_functions();
             continue;
         }
 

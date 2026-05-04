@@ -27,7 +27,11 @@ double eval_ast(ASTNode* node) {
             // El hijo derecho es la expresión a evaluar y guardar en el nombre
             double val = eval_ast(node->right);
             if (!eval_error) {
-                symtable_set(node->name, val);
+                // Si symtable_set retorna 0, la variable es una constante protegida.
+                // El mensaje de error ya fue impreso; solo suprimimos la salida del resultado.
+                if (!symtable_set(node->name, val)) {
+                    eval_error = 1;
+                }
             }
             return val;
         }
