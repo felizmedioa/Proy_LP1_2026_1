@@ -13,6 +13,12 @@ typedef enum {
     AST_ASSIGN     // a = b
 } ASTNodeType;
 
+// Estructura para números complejos
+typedef struct {
+    double real;
+    double imag;
+} Complex;
+
 // Declaración adelantada de la estructura Node
 struct ASTNode;
 
@@ -22,7 +28,7 @@ typedef struct ASTNode {
     
     // Valor directo (AST_NUMBER) o tipo de operador (+, -, etc para AST_BINOP / AST_UNOP)
     union {
-        double value;
+        Complex value;
         TokenType op;      
     };
     

@@ -7,6 +7,6 @@
 extern int eval_error;
 
 // Evalúa recursivamente el Árbol de Sintaxis Abstracta (AST) y retorna el valor calculado.
-double eval_ast(ASTNode* node);
+Complex eval_ast(ASTNode* node);
 
 #endif // EVAL_H

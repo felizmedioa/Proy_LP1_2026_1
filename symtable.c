@@ -18,7 +18,7 @@ static Symbol symbol_table[MAX_VARIABLES];
 static int symbol_count = 0;
 
 // Inserta una constante protegida (solo llamada desde symtable_init)
-void symtable_set_const(const char* name, double value) {
+void symtable_set_const(const char* name, Complex value) {
     if (symbol_count < MAX_VARIABLES) {
         strcpy(symbol_table[symbol_count].name, name);
         symbol_table[symbol_count].value = value;
@@ -30,20 +30,20 @@ void symtable_set_const(const char* name, double value) {
 void symtable_init(void) {
     symbol_count = 0;
     // Constantes predefinidas e inmutables
-    symtable_set_const("pi",  M_PI);
-    symtable_set_const("e",   M_E);
-    symtable_set_const("phi", M_PHI);
+    symtable_set_const("pi",  (Complex){M_PI, 0.0});
+    symtable_set_const("e",   (Complex){M_E, 0.0});
+    symtable_set_const("phi", (Complex){M_PHI, 0.0});
+    symtable_set_const("i",   (Complex){0.0, 1.0});
 }
 
 // Retorna 1 si exitoso, 0 si fue bloqueado por ser constante
-int symtable_set(const char* name, double value) {
+int symtable_set(const char* name, Complex value) {
     // Buscar si ya existe
     for (int i = 0; i < symbol_count; i++) {
         if (strcmp(symbol_table[i].name, name) == 0) {
             // ¿Es una constante protegida?
             if (symbol_table[i].is_const) {
-                printf("Error: '%s' es una constante y no puede modificarse "
-                       "(valor actual: %g).\n", name, symbol_table[i].value);
+                printf("Error: '%s' es una constante y no puede modificarse.\n", name);
                 return 0;
             }
             symbol_table[i].value = value;
@@ -64,7 +64,7 @@ int symtable_set(const char* name, double value) {
     return 0;
 }
 
-int symtable_get(const char* name, double* out_value) {
+int symtable_get(const char* name, Complex* out_value) {
     for (int i = 0; i < symbol_count; i++) {
         if (strcmp(symbol_table[i].name, name) == 0) {
             *out_value = symbol_table[i].value;
@@ -74,6 +74,25 @@ int symtable_get(const char* name, double* out_value) {
     return 0; // Variable no encontrada
 }
 
+// Función auxiliar para imprimir Complex sin nueva línea
+static void print_complex_val(Complex c) {
+    if (c.imag == 0.0) {
+        printf("%g", c.real);
+    } else if (c.real == 0.0) {
+        if (c.imag == 1.0) printf("i");
+        else if (c.imag == -1.0) printf("-i");
+        else printf("%gi", c.imag);
+    } else {
+        if (c.imag > 0) {
+            if (c.imag == 1.0) printf("%g + i", c.real);
+            else printf("%g + %gi", c.real, c.imag);
+        } else {
+            if (c.imag == -1.0) printf("%g - i", c.real);
+            else printf("%g - %gi", c.real, fabs(c.imag));
+        }
+    }
+}
+
 void symtable_list(void) {
     if (symbol_count == 0) {
         printf("No hay variables definidas.\n");
@@ -81,12 +100,12 @@ void symtable_list(void) {
     }
     printf("Variables y constantes definidas:\n");
     for (int i = 0; i < symbol_count; i++) {
+        printf("  %-10s = ", symbol_table[i].name);
+        print_complex_val(symbol_table[i].value);
         if (symbol_table[i].is_const) {
-            printf("  %-10s = %-20g  (constante)\n",
-                   symbol_table[i].name, symbol_table[i].value);
+            printf("  (constante)\n");
         } else {
-            printf("  %-10s = %g\n",
-                   symbol_table[i].name, symbol_table[i].value);
+            printf("\n");
         }
     }
 }

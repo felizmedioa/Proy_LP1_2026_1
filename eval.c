@@ -3,32 +3,29 @@
 #include "functions.h"
 #include <stdio.h>
 #include <math.h>
-//hola probando pullrequest
+
 int eval_error = 0;
 
-double eval_ast(ASTNode* node) {
-    if (!node || eval_error) return 0.0;
+Complex eval_ast(ASTNode* node) {
+    if (!node || eval_error) return (Complex){0.0, 0.0};
 
     switch (node->type) {
         case AST_NUMBER:
             return node->value;
             
         case AST_VAR: {
-            double val;
+            Complex val;
             if (!symtable_get(node->name, &val)) {
                 printf("Error: Variable '%s' no definida.\n", node->name);
                 eval_error = 1;
-                return 0.0;
+                return (Complex){0.0, 0.0};
             }
             return val;
         }
             
         case AST_ASSIGN: {
-            // El hijo derecho es la expresión a evaluar y guardar en el nombre
-            double val = eval_ast(node->right);
+            Complex val = eval_ast(node->right);
             if (!eval_error) {
-                // Si symtable_set retorna 0, la variable es una constante protegida.
-                // El mensaje de error ya fue impreso; solo suprimimos la salida del resultado.
                 if (!symtable_set(node->name, val)) {
                     eval_error = 1;
                 }
@@ -37,77 +34,111 @@ double eval_ast(ASTNode* node) {
         }
             
         case AST_FUNC: {
-            // Evaluamos los argumentos de la función primero
-            double args_eval[10]; // Asumimos un máximo de 10 argumentos por simplicidad
+            Complex args_eval[10];
             if (node->num_args > 10) {
                 printf("Error: Demasiados argumentos en función '%s'\n", node->name);
                 eval_error = 1;
-                return 0.0;
+                return (Complex){0.0, 0.0};
             }
             for (int i = 0; i < node->num_args; i++) {
                 args_eval[i] = eval_ast(node->args[i]);
             }
             
-            if (eval_error) return 0.0;
+            if (eval_error) return (Complex){0.0, 0.0};
             
-            double result;
+            Complex result;
             if (!call_function(node->name, args_eval, node->num_args, &result)) {
                 eval_error = 1;
-                return 0.0;
+                return (Complex){0.0, 0.0};
             }
-            if (isnan(result)) { // Error matemático manejado en call_function
+            if (isnan(result.real) || isnan(result.imag)) {
                 eval_error = 1;
-                return 0.0;
+                return (Complex){0.0, 0.0};
             }
             
             return result;
         }
             
         case AST_UNOP: {
-            double val = eval_ast(node->left);
+            Complex val = eval_ast(node->left);
             if (node->op == TOK_MINUS) {
-                return -val;
+                return (Complex){-val.real, val.imag == 0.0 ? 0.0 : -val.imag};
             }
-            return val; // TOK_PLUS simplemente retorna el valor
+            return val;
         }
             
         case AST_BINOP: {
-            double left_val = eval_ast(node->left);
-            double right_val = eval_ast(node->right);
+            Complex left_val = eval_ast(node->left);
+            Complex right_val = eval_ast(node->right);
             
-            if (eval_error) return 0.0;
+            if (eval_error) return (Complex){0.0, 0.0};
             
             switch (node->op) {
-                case TOK_PLUS: return left_val + right_val;
-                case TOK_MINUS: return left_val - right_val;
-                case TOK_MUL: return left_val * right_val;
+                case TOK_PLUS: 
+                    return (Complex){left_val.real + right_val.real, left_val.imag + right_val.imag};
+                case TOK_MINUS: 
+                    return (Complex){left_val.real - right_val.real, left_val.imag - right_val.imag};
+                case TOK_MUL: 
+                    return (Complex){
+                        left_val.real * right_val.real - left_val.imag * right_val.imag,
+                        left_val.real * right_val.imag + left_val.imag * right_val.real
+                    };
                 case TOK_DIV: {
-                    if (right_val == 0.0) {
+                    double denom = right_val.real * right_val.real + right_val.imag * right_val.imag;
+                    if (denom == 0.0) {
                         printf("Error matemático: División por cero.\n");
                         eval_error = 1;
-                        return 0.0;
+                        return (Complex){0.0, 0.0};
                     }
-                    return left_val / right_val;
+                    return (Complex){
+                        (left_val.real * right_val.real + left_val.imag * right_val.imag) / denom,
+                        (left_val.imag * right_val.real - left_val.real * right_val.imag) / denom
+                    };
                 }
-                case TOK_POW: return pow(left_val, right_val);
+                case TOK_POW: {
+                    double r = sqrt(left_val.real * left_val.real + left_val.imag * left_val.imag);
+                    if (r == 0.0) {
+                        if (right_val.real == 0.0 && right_val.imag == 0.0) return (Complex){1.0, 0.0};
+                        if (right_val.real < 0.0) {
+                            printf("Error matemático: División por cero en potencia.\n");
+                            eval_error = 1;
+                            return (Complex){0.0, 0.0};
+                        }
+                        return (Complex){0.0, 0.0};
+                    }
+                    double theta = atan2(left_val.imag, left_val.real);
+                    double ln_r = log(r);
+                    
+                    double real_part = right_val.real * ln_r - right_val.imag * theta;
+                    double imag_part = right_val.real * theta + right_val.imag * ln_r;
+                    
+                    double e_real = exp(real_part);
+                    return (Complex){e_real * cos(imag_part), e_real * sin(imag_part)};
+                }
                 case TOK_MOD: {
-                    if (right_val == 0.0) {
+                    if (right_val.real == 0.0 && right_val.imag == 0.0) {
                         printf("Error matemático: Módulo por cero.\n");
                         eval_error = 1;
-                        return 0.0;
+                        return (Complex){0.0, 0.0};
                     }
-                    return fmod(left_val, right_val);
+                    if (left_val.imag == 0.0 && right_val.imag == 0.0) {
+                        return (Complex){fmod(left_val.real, right_val.real), 0.0};
+                    } else {
+                        printf("Error matemático: Módulo con números complejos no soportado.\n");
+                        eval_error = 1;
+                        return (Complex){0.0, 0.0};
+                    }
                 }
                 default:
                     printf("Error interno: Operación binaria desconocida.\n");
                     eval_error = 1;
-                    return 0.0;
+                    return (Complex){0.0, 0.0};
             }
         }
         
         default:
             printf("Error interno: Nodo de AST desconocido.\n");
             eval_error = 1;
-            return 0.0;
+            return (Complex){0.0, 0.0};
     }
 }

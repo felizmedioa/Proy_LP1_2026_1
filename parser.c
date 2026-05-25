@@ -164,7 +164,7 @@ static ASTNode* parse_primary(void) {
     
     if (t.type == TOK_NUMBER) {
         ASTNode* node = create_node(AST_NUMBER);
-        node->value = t.value;
+        node->value = (Complex){t.value, 0.0};
         return node;
     } 
     else if (t.type == TOK_LPAREN) {
