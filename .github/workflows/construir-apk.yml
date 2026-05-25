@@ -1,0 +1,37 @@
+name: Compilar App Android con C
+
+# ¿Cuándo se activa el robot?
+on:
+  push:
+    branches: [ "mi-codigo-aislado" ] # Se activa cuando subes código a tu rama
+  workflow_dispatch: # Agrega un botón en la web para activarlo manualmente
+
+jobs:
+  build:
+    name: Construir APK
+    runs-on: ubuntu-latest # La computadora en la nube usará Linux
+
+    steps:
+    - name: 1. Descargar tu código a la nube
+      uses: actions/checkout@v4
+
+    - name: 2. Configurar Java (El motor de Android)
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+
+    - name: 3. Preparar el compilador (Gradle)
+      run: chmod +x android/gradlew
+
+    - name: 4. ¡Hornear el pastel! (Compilar C y Kotlin)
+      run: |
+        cd android
+        ./gradlew assembleDebug
+
+    - name: 5. Guardar el archivo APK final
+      uses: actions/upload-artifact@v4
+      with:
+        name: mi-aplicacion-lista
+        # Esta es la ruta correcta de acuerdo a nuestra estructura de carpetas
+        path: android/app/build/outputs/apk/debug/app-debug.apk 
