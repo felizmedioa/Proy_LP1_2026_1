@@ -9,6 +9,24 @@ Este proyecto es un evaluador interactivo de expresiones algebraicas escrito en 
 - [Aldair Edgard Gutierrez Mamani]
 - [Jose Luis Canchanya Ramos]
 
+## Estructura del Proyecto
+```text
+Proy_LP1_2026_1/
+├── docs/                      # Documentación del proyecto
+├── entregable1/               # Archivos del primer entregable
+├── entregable2/               # Archivos del segundo entregable
+├── RequerimientosIniciales/   # Documentos de requerimientos iniciales
+├── eval.c / eval.h            # Evaluación del Árbol de Sintaxis Abstracta (AST)
+├── functions.c / functions.h  # Implementación de funciones matemáticas (sin, cos, etc.)
+├── lexer.c / lexer.h          # Analizador léxico (Tokenizador)
+├── main.c                     # Punto de entrada y ciclo REPL interactivo
+├── parser.c / parser.h        # Analizador sintáctico (Construcción del AST)
+├── symtable.c / symtable.h    # Tabla de símbolos para variables y constantes
+├── Makefile                   # Reglas de compilación (Make)
+├── test_input*.txt            # Archivos de texto con entradas de prueba
+└── README.md                  # Este archivo de documentación
+```
+
 ## Características Principales
 *  Operadores: `+`, `-`, `*`, `/`, `^` (potencia).
 *  Funciones: `sin`, `cos`, `tan`, `sqrt`, `log`, `log10`, `abs`, `round`, `ceil`, `floor`, `max`, `min`.
